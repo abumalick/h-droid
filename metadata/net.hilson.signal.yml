@@ -1,0 +1,17 @@
+AuthorName: Signal Messenger (upstream); fork by abumalick
+Categories:
+- Internet
+License: AGPL-3.0-only
+Name: Signal (Hilson fork)
+Summary: Signal with a remembered video-call self-view corner
+Description: |-
+  Fork of Signal-Android that remembers which corner the video-call self-view
+  was dragged to, across calls and app restarts.
+
+  This build uses its own application ID and signing key, so it installs
+  separately from the official Signal and must be registered on its own.
+SourceCode: https://github.com/abumalick/Signal-Android
+IssueTracker: https://github.com/abumalick/Signal-Android/issues
+WebSite: https://github.com/abumalick/Signal-Android
+AutoUpdateMode: None
+UpdateCheckMode: None

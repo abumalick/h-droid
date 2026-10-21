@@ -1,0 +1,12 @@
+{
+  "name": "h-droid",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "index": "uv run fdroid update --create-metadata && uv run fdroid update",
+    "release": "pnpm index && node scripts/publish.mjs && wrangler deploy"
+  },
+  "devDependencies": {
+    "wrangler": "^4"
+  }
+}

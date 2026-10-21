@@ -1,0 +1,11 @@
+.tmp/
+.venv/
+node_modules/
+.wrangler/
+*.p12
+secrets.env
+/repo/
+/archive/
+/tmp/
+unsigned/
+CLAUDE.local.md

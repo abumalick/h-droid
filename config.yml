@@ -1,0 +1,10 @@
+sdk_path: $ANDROID_HOME
+repo_url: https://fdroid.hilson.net/repo
+repo_name: Hilson F-Droid
+repo_description: Personal forks and apps, shared with family.
+repo_keyalias: hdroid
+keystore: keystore.p12
+keydname: CN=hdroid, OU=F-Droid
+archive_older: 0
+keystorepass: {env: FDROID_KEY_STORE_PASS}
+keypass: {env: FDROID_KEY_PASS}

@@ -1,0 +1,10 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "h-droid",
+  "account_id": "9ab550becc556ce60d4250bfdc48224c",
+  "main": "src/worker.js",
+  "compatibility_date": "2026-10-01",
+  "routes": [{ "pattern": "fdroid.hilson.net", "custom_domain": true }],
+  "r2_buckets": [{ "binding": "REPO", "bucket_name": "h-droid-repo" }],
+  "observability": { "enabled": true }
+}
