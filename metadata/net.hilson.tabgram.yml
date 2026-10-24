@@ -1,0 +1,31 @@
+AntiFeatures:
+- Ads
+- NonFreeDep
+- NonFreeNet
+AuthorName: Telegram (upstream); fork by abumalick
+Categories:
+- Internet
+License: GPL-2.0-only
+Name: Tabgram
+Summary: Unofficial Telegram client with folder tab and Premium tweaks
+Description: |-
+  Tabgram is an unofficial Telegram client for Android. It is not affiliated
+  with or endorsed by Telegram. It is built from the official Telegram for
+  Android source code, with a small set of changes:
+
+  * Log in by scanning a QR code from another logged-in device.
+  * Reorder All Chats among the folder tabs without Premium.
+  * An optional switch hides Premium-only content and upsell for non-Premium
+    accounts.
+  * Sponsored messages are shown as a compact pill; they are still reported as
+    viewed and clicked.
+  * Fixes: Back on tablets after a layout change, Archive kept on rotation, the
+    New Contacts notification switch, and no repeated photo-access prompt after
+    limited access.
+
+  This build uses its own application ID and signing key, so it installs
+  separately from the official Telegram app.
+SourceCode: https://github.com/abumalick/Tabgram
+WebSite: https://github.com/abumalick/Tabgram
+AutoUpdateMode: None
+UpdateCheckMode: None
