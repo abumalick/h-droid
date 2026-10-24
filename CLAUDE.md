@@ -28,8 +28,12 @@ Do not rename these scripts `update` or `publish`: they are built-in pnpm comman
 
 - `keystore.p12`: repo index signing key. Its fingerprint is in the add-repo link in `README.md`;
   losing it forces every device to re-add the repo.
-- `signal-release.p12`: app signing key for the Signal fork. Separate from the index key.
-  Losing it means nobody can update that app in place.
+- `signal-release.p12`: app signing key for the Signal fork (alias `signal`, password
+  `SIGNAL_KEY_PASS`). Separate from the index key (alias `hdroid`). Losing it means nobody can
+  update that app in place. Convention for new apps: `<app>-release.p12`, alias `<app>`,
+  password `<APP>_KEY_PASS`.
+- On a new machine the keys and `secrets.env` must be restored from the owner's backup before
+  anything can be signed or indexed; they are not in git.
 - `secrets.env`: passwords (`FDROID_KEY_STORE_PASS`, `FDROID_KEY_PASS`, `SIGNAL_KEY_PASS`),
   loaded by `mise.toml`. `config.yml` references them with `{env: VAR}`.
 - `fdroid update --create-key` writes the passwords it generates into `config.yml`;
@@ -37,16 +41,77 @@ Do not rename these scripts `update` or `publish`: they are built-in pnpm comman
 
 ## Adding an app
 
-1. Build a release APK of the fork and sign it with that app's own permanent key
-   (`apksigner sign`; check with `zipalign -c -P 16 4` and `aapt2 dump badging`).
-2. Copy it to `repo/<applicationId>_<versionCode>.apk`.
-3. `pnpm index` creates `metadata/<applicationId>.yml`; fill in name, summary, licence,
-   source links, then `pnpm release`.
-4. Verify from the public URL: the package appears in `index-v2.json`, the downloaded
-   APK hash matches, and `apksigner verify` shows the app key.
+### 0. Decide with the owner first (these change what gets built)
 
-Forks that keep upstream's application ID cannot update over, or be updated by, the
-official build (different signature). Give forks their own application ID.
+- **Licence**: does it allow distributing this modified build? Copyleft (GPL/AGPL) is fine if
+  the source is linked in `SourceCode`; anything restrictive or unclear means stop and ask.
+- **Application ID**: forks that keep upstream's ID cannot update over, or be updated by, the
+  official build (different signature), so the user must uninstall first and risks data loss.
+  Default: give the fork its own ID (here `net.hilson.<app>`), set only on the flavor that is
+  distributed. It is permanent after the first release.
+- **Signing key**: one key per app, never shared with another app or with the repo index key.
+- **ABI**: publish `arm64-v8a` only unless a device needs another one.
+
+### 1. Create the app's signing key (once per app)
+
+    cd <this repo>; set -a; . ./secrets.env; set +a
+    PW=$(openssl rand -base64 24); printf '<APP>_KEY_PASS=%s\n' "$PW" >> secrets.env
+    export <APP>_KEY_PASS="$PW"
+    mise exec -- keytool -genkeypair -keystore <app>-release.p12 -storetype PKCS12 \
+      -alias <app> -keyalg RSA -keysize 4096 -validity 36500 -dname "CN=<App> fork" \
+      -storepass:env <APP>_KEY_PASS -keypass:env <APP>_KEY_PASS
+    chmod 600 <app>-release.p12
+
+`*.p12` and `secrets.env` are git-ignored. Never print passwords. Tell the owner to back both up
+outside the repo: the key cannot be recovered and every later update must use it.
+
+### 2. Build and sign the release APK
+
+Build the fork's unsigned release variant (for Android Studio projects usually
+`./gradlew assemble<Flavor>Release`; Gradle can need a lot of memory, so bound it).
+Then, with `BT=$ANDROID_HOME/build-tools/<newest>`:
+
+    $BT/aapt2 dump badging in.apk | head -1          # check package name and versionCode
+    $BT/zipalign -c -P 16 4 in.apk                    # if it fails: zipalign -P 16 -f 4 in.apk aligned.apk
+    mise exec -- $BT/apksigner sign --ks <app>-release.p12 --ks-key-alias <app> \
+      --ks-pass env:<APP>_KEY_PASS --out repo/<applicationId>_<versionCode>.apk in.apk
+    mise exec -- $BT/apksigner verify --print-certs repo/<applicationId>_<versionCode>.apk
+
+An update must keep the same ID and key and have a higher `versionCode`.
+
+### 3. Index and publish
+
+1. `mise exec -- pnpm index` creates `metadata/<applicationId>.yml` on first run.
+2. Fill it in: `Name`, `Summary`, `Description`, `License` (SPDX), `SourceCode`, `IssueTracker`,
+   `WebSite`, a real `Categories` value, `AutoUpdateMode: None`, `UpdateCheckMode: None`
+   (APKs are added by hand; there is no source build here). Icons come from the APK.
+3. `mise exec -- pnpm release` regenerates the index, uploads changed files, deploys the Worker.
+4. Add a row to the **Apps** table below and commit it, so the next agent sees it.
+
+### 4. Verify from the public URL (do not claim done without this)
+
+    curl -s https://fdroid.hilson.net/repo/index-v2.json | jq '.packages["<applicationId>"].versions | keys'
+    curl -s -o .tmp/check.apk https://fdroid.hilson.net/repo/<applicationId>_<versionCode>.apk
+    sha256sum .tmp/check.apk repo/<applicationId>_<versionCode>.apk   # identical
+    apksigner verify --print-certs .tmp/check.apk                      # shows the app key, not the repo key
+
+Installing and running it on a real device is a separate check the owner must do.
+
+### Updating or removing an app
+
+- Update: repeat steps 2 to 4. `archive_older: 0` keeps every APK in `repo/`; delete superseded
+  APKs locally and from R2 if space matters (they stay downloadable until removed).
+- Remove: delete the APK and `metadata/<applicationId>.yml`, run `pnpm release`, then
+  `wrangler r2 object delete h-droid-repo/repo/<file> --remote`. Installed copies keep working.
+
+### Rules for this repo
+
+- It is public: no secrets, hostnames, personal setup details or incident stories in tracked files.
+  Put anything machine-specific in `CLAUDE.local.md` (ignored).
+- Never run `fdroid update --create-key` again and never replace `keystore.p12`: devices pin the
+  repo's fingerprint and would all have to re-add it.
+- `config.yml` should be mode 600 (`chmod 600 config.yml`); fdroid warns otherwise.
+- Commit and push only when the owner asks.
 
 ## Apps
 
