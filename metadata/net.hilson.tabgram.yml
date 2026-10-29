@@ -20,8 +20,9 @@ Description: |-
   * Sponsored messages are shown as a compact pill; they are still reported as
     viewed and clicked.
   * Fixes: Back on tablets after a layout change, Archive kept on rotation, the
-    New Contacts notification switch, and no repeated photo-access prompt after
-    limited access.
+    New Contacts notification switch, no repeated photo-access prompt after
+    limited access, and notifications from several chats each open their own
+    chat.
 
   This build uses its own application ID and signing key, so it installs
   separately from the official Telegram app.

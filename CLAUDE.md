@@ -118,7 +118,7 @@ Installing and running it on a real device is a separate check the owner must do
 | Package | Source | Notes |
 |---|---|---|
 | `net.hilson.signal` | github.com/abumalick/Signal-Android (`github` flavor) | Own application ID and key; arm64-v8a only; v8.32.2 (code 176901). Build: `./gradlew :Signal-Android:assembleGithubProdRelease` (about 11 min, needs a memory bound). Rebuild regularly: Signal servers can reject old clients. |
-| `net.hilson.tabgram` | github.com/abumalick/Tabgram (branch `tabgram`, fork of DrKLO/Telegram) | GPL-2.0-only; arm64-v8a only; v13.0.3 (code 71839). Signed at build time with Tabgram's own key (cert SHA-256 `888f1be3…`), kept in the Tabgram checkout, not here: copy the APK as-is, do not re-sign. Build: `./gradlew :TMessagesProj_App:assembleAfatRelease -Pandroid.injected.build.abi=arm64-v8a -Pandroid.injected.testOnly=false` (needs a memory bound; without `testOnly=false` the APK is test-only). Needs the gitignored `unofficial.properties`, `unofficial-signing/tabgram.keystore` and both `google-services.json`; see `UPSTREAM-UPDATE.md` there. |
+| `net.hilson.tabgram` | github.com/abumalick/Tabgram (branch `tabgram`, fork of DrKLO/Telegram) | GPL-2.0-only; arm64-v8a only; v13.0.3 (code 7183902). Signed at build time with Tabgram's own key (cert SHA-256 `888f1be3…`), kept in the Tabgram checkout, not here: copy the APK as-is, do not re-sign. Build: `./gradlew :TMessagesProj_App:assembleAfatRelease -Pandroid.injected.build.abi=arm64-v8a -Pandroid.injected.testOnly=false` (needs a memory bound; without `testOnly=false` the APK is test-only). Needs the gitignored `unofficial.properties`, `unofficial-signing/tabgram.keystore` and both `google-services.json`; see `UPSTREAM-UPDATE.md` there. |
 
 ## Pending
 
