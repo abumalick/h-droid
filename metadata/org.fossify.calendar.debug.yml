@@ -1,0 +1,22 @@
+AuthorName: Fossify (upstream); fork by abumalick
+Categories:
+- Time
+License: GPL-3.0-only
+Name: Calendar TZ
+Summary: Fossify Calendar that can show the whole calendar in another time zone
+Description: |-
+  Fork of Fossify Calendar with a few changes:
+
+  * A toolbar button shows the whole calendar in another time zone, chosen
+    from a list of favorite zones in the settings, and switches back to the
+    device's own zone. All-day events stay on their dates.
+  * Recurring events are expanded in the event's own time zone, so they keep
+    their local time across daylight saving changes.
+
+  This build uses its own application ID and signing key, so it installs
+  separately from the official Fossify Calendar.
+SourceCode: https://github.com/abumalick/fossify-calendar
+IssueTracker: https://github.com/abumalick/fossify-calendar/issues
+WebSite: https://github.com/abumalick/fossify-calendar
+AutoUpdateMode: None
+UpdateCheckMode: None
